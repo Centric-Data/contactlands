@@ -49,8 +49,12 @@ class ContactLenseForm
     // Add Assets (js, css)
     add_action( 'wp_enqueue_scripts', array( $this, 'load_assets' ) );
 
+    // Add shortcode
+    add_shortcode( 'contact-lense', array( $this, 'load_shortcode' ) );
+
   }
 
+  // Create Post Type
   public function create_custom_post_type()
   {
     $args = array(
@@ -69,11 +73,73 @@ class ContactLenseForm
     register_post_type( 'contact_lense_form', $args );
   }
 
+  // Enqueue Scripts
   public function load_assets()
   {
     wp_enqueue_style( 'contactlense-css', CLF_PLUGIN_URL . 'css/contactlense.css', [], time(), 'all' );
-    wp_enqueue_script( 'contactlense-js', CLF_PLUGIN_URL . 'js/contactlense.js', [], time(), 'all' );
+    wp_enqueue_script( 'contactlense-js', CLF_PLUGIN_URL . 'js/contactlense.js', ['jquery'], time(), 1 );
   }
+
+  // Shortcode function
+  public function load_shortcode()
+  {?>
+    <section>
+    	<div class="contact__wrapper lense-row">
+    		<h4><?php echo esc_html__( 'Contact Us', 'contactlense' ); ?></h4>
+    		<p><?php echo esc_html__( 'We’re here to help and answer any question you might have. We look forward to hearing from you', 'contactlense' ); ?></p>
+    		<div class="contact__layout">
+    			<div class="contact__layout--top">
+    				<div class="top__left">
+    					<h5><?php echo esc_html__( 'Contact Information', 'contactlense' ); ?></h5>
+    					<div class="top__left--card">
+    						<div class="card--info">
+    							<div class="card--icon">
+    								<span class="material-icons">room</span>
+    							</div>
+    							<div class="card--details">
+    								<p>
+    								The Zimbabwe Land Commission <br>
+    								19280 Borrowdale Road <br>
+    								Block 1, Celestial Park, Harare <br>
+    								Private Bag CY7771, Harare, Zimbabwe
+    								</p>
+    							</div>
+    						</div>
+    						<div class="card--info">
+    							<div class="card--icon">
+    								<span class="material-icons">phone</span>
+    							</div>
+    								<div class="card--details">
+    									<p>+263-242- 774604</p>
+    								</div>
+    						</div>
+    						<div class="card--info">
+    							<div class="card--icon">
+    								<span class="material-icons">mail</span>
+    							</div>
+    							<div class="card--details">
+    								<p>info@zlc.co.zw</p>
+    							</div>
+    						</div>
+    					</div>
+    				</div>
+    				<div class="top__right">
+    					<h3><?php echo esc_html__( 'Get In Touch.', 'contactlense' ); ?></h3>
+    					<div class="form__wrapper">
+    						<form>
+    							<input id="cf_fullname" type="text" name="fullname" placeholder="Fullname">
+    							<input id="cf_email" type="email" name="email" placeholder="Email">
+    							<textarea id="cf_message" rows="5" cols="33" name="fullname" placeholder="Message">Message</textarea>
+    							<button id="cf_submit">Send Message</button>
+    						</form>
+    					</div>
+    				</div>
+    			</div>
+    			<div class="contact__layout--bottom"></div>
+    		</div>
+    	</div>
+    </section>
+  <?php }
 
 }
 
