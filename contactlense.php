@@ -52,6 +52,12 @@ class ContactLenseForm
     // Add shortcode
     add_shortcode( 'contact-lense', array( $this, 'load_shortcode' ) );
 
+    // Load Javascript
+    add_action( 'wp_footer', array( $this, 'load_scripts' ) );
+
+    //  Register REST API
+    add_action( 'rest_api_init', array( $this, 'register_rest_api' ) );
+
   }
 
   // Create Post Type
@@ -126,11 +132,12 @@ class ContactLenseForm
     				<div class="top__right">
     					<h3><?php echo esc_html__( 'Get In Touch.', 'contactlense' ); ?></h3>
     					<div class="form__wrapper">
-    						<form>
+    						<form id="cf_form">
     							<input id="cf_fullname" type="text" name="fullname" placeholder="Fullname">
     							<input id="cf_email" type="email" name="email" placeholder="Email">
-    							<textarea id="cf_message" rows="5" cols="33" name="fullname" placeholder="Message">Message</textarea>
-    							<button id="cf_submit">Send Message</button>
+                  <input id="cf_telno" type="tel" name="telno" placeholder="Phone Number">
+    							<textarea id="cf_message" rows="5" cols="33" name="message" placeholder="Message">Message</textarea>
+    							<button type="submit" id="cf_submit">Send Message</button>
     						</form>
     					</div>
     				</div>
@@ -140,6 +147,52 @@ class ContactLenseForm
     	</div>
     </section>
   <?php }
+
+  // Run Script on Submit
+  public function load_scripts()
+  {?>
+    <script>
+
+    let nonce = '<?php echo wp_create_nonce('wp_rest'); ?>';
+
+      ( function($){
+        $( '#cf_form' ).on("submit", function( e ) {
+          e.preventDefault();
+          var form = $( this ).serialize();
+          console.log( form );
+
+          $.ajax({
+            method:'post',
+            url: '<?php echo get_rest_url( null, 'contactlense/v1/send-email' ); ?>',
+            headers: { 'X-WP-Nonce': nonce },
+            data: form
+          })
+        });
+      } )(jQuery)
+    </script>
+  <?php }
+
+  public function register_rest_api()
+  {
+    register_rest_route( 'contactlense/v1', 'send-email', array(
+        'methods' => 'POST',
+        'callback' => array( $this, 'handle_contact_form' )
+    )  );
+  }
+
+  public function handle_contact_form($data)
+  {
+    $headers = $data->get_headers();
+    $params = $data->get_params();
+
+    $nonce = $headers[ 'x_wp_nonce' ][0];
+
+    //  Verify Nonce
+    if ( ! wp_verify_nonce( $nonce, 'wp_rest' ) )
+    {
+      return new WP_REST_Response( 'Message not sent', 422 );
+    }
+  }
 
 }
 
