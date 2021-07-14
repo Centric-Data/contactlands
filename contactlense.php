@@ -67,20 +67,20 @@ class ContactLenseForm
   public function clf_create_custom_post_type()
   {
     $args = array(
-      'public'      =>  true,
-      'has_archive' =>  true,
-      'hierarchical' => true,
-      'supports'    =>  array('title'),
-      'exclude_from_search' =>  true,
-      'publicly_queryable'   =>  false,
-      'capability'          =>  'manage_options',
-      'labels'              =>  array(
-        'name' => __( 'Contact Form', 'contactlense' ),
-        'singular_name' => __( 'Contact Form Entry', 'contactlense' )
+      'public'                =>  true,
+      'has_archive'           =>  true,
+      'hierarchical'          =>  false,
+      'supports'              =>  array('title','editor','author'),
+      'exclude_from_search'   =>  true,
+      'publicly_queryable'    =>  false,
+      'capability_type'       =>  'page',
+      'labels'                =>  array(
+        'name'          => __( 'Enquries', 'contactlense' ),
+        'singular_name' => __( 'Form Enquiry', 'contactlense' )
       ),
-      'menu_icon'       =>  'dashicons-text',
+      'menu_icon'       =>  'dashicons-email',
     );
-    register_post_type( 'contact_lense_form', $args );
+    register_post_type( 'contactlense-form', $args );
   }
 
   // Enqueue Scripts
@@ -198,7 +198,7 @@ class ContactLenseForm
     }
 
     $post_id = wp_insert_post( [
-        'post_type' => 'contact_lense_form',
+        'post_type' => 'contactlense-form',
         'post_title' => 'Contact Enquiry',
         'post_status' => 'publish'
       ] );
@@ -225,12 +225,45 @@ class ContactLenseForm
       'labels'        => $labels,
       'rewrite'       => [ 'slug' => 'enquire' ],
     ];
-    register_taxonomy( 'enquire', 'contact_lense_form', $args );
+    register_taxonomy( 'enquire', 'contactlense-form', $args );
   }
 
 }
 
 new ContactLenseForm;
 
+// Custom Enquiry Columns
+function clf_enquiry_columns( $columns ) {
+
+  $newColumns = array();
+  $newColumns['title'] = 'Fullname';
+  $newColumns['message'] = 'Message';
+  $newColumns['email'] = 'Email';
+  $newColumns['phone'] = 'Phone';
+  $newColumns['date'] = 'Date';
+
+  return $newColumns;
+}
+add_filter( 'manage_contactlense-form_posts_columns', 'clf_enquiry_columns' );
+
+// Manage Custom Column Data
+add_action( 'manage_contactlense-form_posts_custom_column', 'clf_enquiry_custom_column', 10, 2 );
+function clf_enquiry_custom_column( $column, $post_id  ){
+  switch ( $column ) {
+    case 'message':
+      echo get_the_excerpt();
+      break;
+    case 'email':
+      // code...
+      break;
+    case 'phone':
+      // code...
+      break;
+
+    default:
+      // code...
+      break;
+  }
+}
 
  ?>
