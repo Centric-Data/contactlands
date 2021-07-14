@@ -44,28 +44,32 @@ class ContactLenseForm
   public function __construct()
   {
     // Create Custom post type
-    add_action( 'init', array($this, 'create_custom_post_type') );
+    add_action( 'init', array( $this, 'clf_create_custom_post_type' ) );
+
+    // Add Meta Boxes to Post Type
+    add_action( 'init', array( $this, 'clf_enquries_add_custom_box' ) );
 
     // Add Assets (js, css)
-    add_action( 'wp_enqueue_scripts', array( $this, 'load_assets' ) );
+    add_action( 'wp_enqueue_scripts', array( $this, 'clf_load_assets' ) );
 
     // Add shortcode
-    add_shortcode( 'contact-lense', array( $this, 'load_shortcode' ) );
+    add_shortcode( 'contact-lense', array( $this, 'clf_load_shortcode' ) );
 
     // Load Javascript
-    add_action( 'wp_footer', array( $this, 'load_scripts' ) );
+    add_action( 'wp_footer', array( $this, 'clf_load_scripts' ) );
 
     //  Register REST API
-    add_action( 'rest_api_init', array( $this, 'register_rest_api' ) );
+    add_action( 'rest_api_init', array( $this, 'clf_register_rest_api' ) );
 
   }
 
   // Create Post Type
-  public function create_custom_post_type()
+  public function clf_create_custom_post_type()
   {
     $args = array(
       'public'      =>  true,
       'has_archive' =>  true,
+      'hierarchical' => true,
       'supports'    =>  array('title'),
       'exclude_from_search' =>  true,
       'publicly_queryable'   =>  false,
@@ -80,14 +84,14 @@ class ContactLenseForm
   }
 
   // Enqueue Scripts
-  public function load_assets()
+  public function clf_load_assets()
   {
     wp_enqueue_style( 'contactlense-css', CLF_PLUGIN_URL . 'css/contactlense.css', [], time(), 'all' );
     wp_enqueue_script( 'contactlense-js', CLF_PLUGIN_URL . 'js/contactlense.js', ['jquery'], time(), 1 );
   }
 
   // Shortcode function
-  public function load_shortcode()
+  public function clf_load_shortcode()
   {?>
     <section>
     	<div class="contact__wrapper lense-row">
@@ -149,7 +153,7 @@ class ContactLenseForm
   <?php }
 
   // Run Script on Submit
-  public function load_scripts()
+  public function clf_load_scripts()
   {?>
     <script>
 
@@ -172,7 +176,7 @@ class ContactLenseForm
     </script>
   <?php }
 
-  public function register_rest_api()
+  public function clf_register_rest_api()
   {
     register_rest_route( 'contactlense/v1', 'send-email', array(
         'methods' => 'POST',
@@ -192,6 +196,36 @@ class ContactLenseForm
     {
       return new WP_REST_Response( 'Message not sent', 422 );
     }
+
+    $post_id = wp_insert_post( [
+        'post_type' => 'contact_lense_form',
+        'post_title' => 'Contact Enquiry',
+        'post_status' => 'publish'
+      ] );
+
+      // Message success message
+      if ( $post_id )
+      {
+        return new WP_REST_Response( $params['fullname'], 200 );
+
+      }
+  }
+
+  // Create Custom Taxonomy
+  public function clf_enquries_add_custom_box(){
+    $labels = [
+      'name'      =>  _x( 'Enquiries', 'enquiries' ),
+      'singular_name' =>  _x( 'Enquire', 'enquire' ),
+      'search_items'  =>  __( 'Search Enquires' ),
+      'all_items'     =>  __( 'All Enquiries' ),
+      'menu_name'     =>  __( 'Enquiries' )
+    ];
+    $args = [
+      'hierarchical'  => true,
+      'labels'        => $labels,
+      'rewrite'       => [ 'slug' => 'enquire' ],
+    ];
+    register_taxonomy( 'enquire', 'contact_lense_form', $args );
   }
 
 }
