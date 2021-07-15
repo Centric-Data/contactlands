@@ -254,7 +254,7 @@ function clf_enquiry_custom_column( $column, $post_id  ){
       echo get_the_excerpt();
       break;
     case 'email':
-      // code...
+      echo esc_html__( 'wpcentricdev@gmail.com' );
       break;
     case 'phone':
       // code...
