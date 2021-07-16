@@ -46,8 +46,7 @@ class ContactLenseForm
     // Create Custom post type
     add_action( 'init', array( $this, 'clf_create_custom_post_type' ) );
 
-    // Add Meta Boxes to Post Type
-    add_action( 'init', array( $this, 'clf_enquries_add_custom_box' ) );
+    add_action( 'add_meta_boxes', array( $this, 'clf_enquiry_add_meta_box' ) );
 
     // Add Assets (js, css)
     add_action( 'wp_enqueue_scripts', array( $this, 'clf_load_assets' ) );
@@ -63,7 +62,10 @@ class ContactLenseForm
 
   }
 
-  // Create Post Type
+  /**
+  * Register a custom post type called 'enquire'
+  *
+  */
   public function clf_create_custom_post_type()
   {
     $args = array(
@@ -73,14 +75,21 @@ class ContactLenseForm
       'supports'              =>  array('title','editor','author'),
       'exclude_from_search'   =>  true,
       'publicly_queryable'    =>  false,
-      'capability_type'       =>  'page',
+      'capability_type'       =>  'post',
       'labels'                =>  array(
-        'name'          => __( 'Enquries', 'contactlense' ),
-        'singular_name' => __( 'Form Enquiry', 'contactlense' )
+        'name'                => __( 'Enquries', 'contactlense' ),
+        'singular_name'       => __( 'Form Enquiry', 'contactlense' ),
+        'menu_name'           => _x( 'Enquries', 'Admin Menu text', 'contactlense' ),
+        'add_new'             => __( 'Add New', 'contactlense' ),
+        'add_new_item'        => __( 'Add New Enquiry', 'contactlense' ),
+        'new_item'            => __( 'New Enquiry', 'contactlense' ),
+        'edit_item'           => __( 'Edit Enquiry', 'contactlense' ),
+        'view_item'           => __( 'View Enquiry', 'contactlense' ),
+        'all_items'           => __( 'All Enquiries', 'contactlense' )
       ),
       'menu_icon'       =>  'dashicons-email',
     );
-    register_post_type( 'contactlense-form', $args );
+    register_post_type( 'enquire', $args );
   }
 
   // Enqueue Scripts
@@ -139,7 +148,7 @@ class ContactLenseForm
     						<form id="cf_form">
     							<input id="cf_fullname" type="text" name="fullname" placeholder="Fullname">
     							<input id="cf_email" type="email" name="email" placeholder="Email">
-                  <input id="cf_telno" type="tel" name="telno" placeholder="Phone Number">
+                  <input id="cf_telno" type="tel" name="phone" placeholder="Phone Number">
     							<textarea id="cf_message" rows="5" cols="33" name="message" placeholder="Message">Message</textarea>
     							<button type="submit" id="cf_submit">Send Message</button>
     						</form>
@@ -198,11 +207,14 @@ class ContactLenseForm
     }
 
     $post_id = wp_insert_post( [
-        'post_type' => 'contactlense-form',
-        'post_title' => 'Contact Enquiry',
+        'post_type' => 'enquire',
+        'post_title' => wp_strip_all_tags( $params['fullname'] ),
+        'post_content'  =>  wp_strip_all_tags( $params['message'] ),
         'post_status' => 'publish'
       ] );
 
+      add_post_meta( $post_id, '_clf_email_meta_key', $params['email'] );
+      add_post_meta( $post_id, '_clf_phone_meta_key', $params['phone'] );
       // Message success message
       if ( $post_id )
       {
@@ -211,21 +223,10 @@ class ContactLenseForm
       }
   }
 
-  // Create Custom Taxonomy
-  public function clf_enquries_add_custom_box(){
-    $labels = [
-      'name'      =>  _x( 'Enquiries', 'enquiries' ),
-      'singular_name' =>  _x( 'Enquire', 'enquire' ),
-      'search_items'  =>  __( 'Search Enquires' ),
-      'all_items'     =>  __( 'All Enquiries' ),
-      'menu_name'     =>  __( 'Enquiries' )
-    ];
-    $args = [
-      'hierarchical'  => true,
-      'labels'        => $labels,
-      'rewrite'       => [ 'slug' => 'enquire' ],
-    ];
-    register_taxonomy( 'enquire', 'contactlense-form', $args );
+  // Enquiry Meta Boxes
+  public function clf_enquiry_add_meta_box() {
+    add_meta_box( 'enquiry_email', 'User Email', 'clf_enquiry_email_callback', 'enquire', 'side', 'default'  );
+    add_meta_box( 'enquiry_phone', 'User Phone', 'clf_enquiry_phone_callback', 'enquire', 'side', 'default' );
   }
 
 }
@@ -244,20 +245,22 @@ function clf_enquiry_columns( $columns ) {
 
   return $newColumns;
 }
-add_filter( 'manage_contactlense-form_posts_columns', 'clf_enquiry_columns' );
+add_filter( 'manage_enquire_posts_columns', 'clf_enquiry_columns' );
 
 // Manage Custom Column Data
-add_action( 'manage_contactlense-form_posts_custom_column', 'clf_enquiry_custom_column', 10, 2 );
+add_action( 'manage_enquire_posts_custom_column', 'clf_enquiry_custom_column', 10, 2 );
 function clf_enquiry_custom_column( $column, $post_id  ){
   switch ( $column ) {
     case 'message':
       echo get_the_excerpt();
       break;
     case 'email':
-      echo esc_html__( 'wpcentricdev@gmail.com' );
+      $email = get_post_meta( $post_id, '_clf_email_meta_key', true);
+      echo '<a href="mailto:'.$email.'">'.$email.'</a>';
       break;
     case 'phone':
-      // code...
+      $phone = get_post_meta( $post_id, '_clf_phone_meta_key', true );
+      echo $phone;
       break;
 
     default:
@@ -265,5 +268,41 @@ function clf_enquiry_custom_column( $column, $post_id  ){
       break;
   }
 }
+
+// Meta box callback functions
+function clf_enquiry_email_callback( $post ) {
+  $value = get_post_meta( $post->ID, '_clf_email_meta_key', true);
+  ?>
+    <label for="user_email">Email</label>
+    <input type="email" id="clf_email_data" name="clf_email_data" value="<?php echo esc_attr( $value ); ?>">
+  <?
+}
+
+function clf_enquiry_phone_callback( $post ) {
+  $value = get_post_meta( $post->ID, '_clf_phone_meta_key', true );
+  ?>
+  <label for="user_phone">Phone Number</label>
+  <input type="tel" id="clf_phone_data" name="clf_phone_data" value="<?php echo esc_attr( $value ); ?>">
+  <?
+}
+
+/**
+* Save data on Meta box input fields
+*
+*/
+function clf_save_email_phone_data( $post_id ) {
+  if( ! current_user_can( 'edit_post', $post_id ) ){
+    return;
+  }
+  if ( array_key_exists( 'clf_email_data', $_POST ) ) {
+    $my_email_data = sanitize_text_field( $_POST[ 'clf_email_data' ] );
+    update_post_meta( $post_id, '_clf_email_meta_key', $my_email_data );
+  }
+  if ( array_key_exists( 'clf_phone_data', $_POST ) ) {
+    $my_phone_data = sanitize_text_field( $_POST[ 'clf_phone_data' ] );
+    update_post_meta( $post_id, '_clf_phone_meta_key', $my_phone_data );
+  }
+}
+add_action( 'save_post', 'clf_save_email_phone_data' );
 
  ?>
