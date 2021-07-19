@@ -63,7 +63,7 @@ class ContactLenseForm
   }
 
   /**
-  * Register a custom post type called 'enquire'
+  * Register a custom post type called 'centric_enquire'
   *
   */
   public function clf_create_custom_post_type()
@@ -89,7 +89,7 @@ class ContactLenseForm
       ),
       'menu_icon'       =>  'dashicons-email',
     );
-    register_post_type( 'enquire', $args );
+    register_post_type( 'centric_enquire', $args );
   }
 
   // Enqueue Scripts
@@ -207,7 +207,7 @@ class ContactLenseForm
     }
 
     $post_id = wp_insert_post( [
-        'post_type' => 'enquire',
+        'post_type' => 'centric_enquire',
         'post_title' => wp_strip_all_tags( $params['fullname'] ),
         'post_content'  =>  wp_strip_all_tags( $params['message'] ),
         'post_status' => 'publish'
@@ -225,8 +225,8 @@ class ContactLenseForm
 
   // Enquiry Meta Boxes
   public function clf_enquiry_add_meta_box() {
-    add_meta_box( 'enquiry_email', 'User Email', 'clf_enquiry_email_callback', 'enquire', 'side', 'default'  );
-    add_meta_box( 'enquiry_phone', 'User Phone', 'clf_enquiry_phone_callback', 'enquire', 'side', 'default' );
+    add_meta_box( 'enquiry_email', 'User Email', 'clf_enquiry_email_callback', 'centric_enquire', 'side', 'default'  );
+    add_meta_box( 'enquiry_phone', 'User Phone', 'clf_enquiry_phone_callback', 'centric_enquire', 'side', 'default' );
   }
 
 }
@@ -245,10 +245,10 @@ function clf_enquiry_columns( $columns ) {
 
   return $newColumns;
 }
-add_filter( 'manage_enquire_posts_columns', 'clf_enquiry_columns' );
+add_filter( 'manage_centric_enquire_posts_columns', 'clf_enquiry_columns' );
 
 // Manage Custom Column Data
-add_action( 'manage_enquire_posts_custom_column', 'clf_enquiry_custom_column', 10, 2 );
+add_action( 'manage_centric_enquire_posts_custom_column', 'clf_enquiry_custom_column', 10, 2 );
 function clf_enquiry_custom_column( $column, $post_id  ){
   switch ( $column ) {
     case 'message':
