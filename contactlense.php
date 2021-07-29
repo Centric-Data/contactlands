@@ -62,6 +62,13 @@ class ContactLenseForm
 
   }
 
+  // Enqueue Scripts
+  public function clf_load_assets()
+  {
+    wp_enqueue_style( 'contactlense-css', CLF_PLUGIN_URL . 'css/contactlense.css', [], time(), 'all' );
+    wp_enqueue_script( 'contactlense-js', CLF_PLUGIN_URL . 'js/contactlense.js', ['jquery'], time(), 1 );
+  }
+
   /**
   * Register a custom post type called 'centric_enquire'
   *
@@ -90,13 +97,6 @@ class ContactLenseForm
       'menu_icon'       =>  'dashicons-email',
     );
     register_post_type( 'centric_enquire', $args );
-  }
-
-  // Enqueue Scripts
-  public function clf_load_assets()
-  {
-    wp_enqueue_style( 'contactlense-css', CLF_PLUGIN_URL . 'css/contactlense.css', [], time(), 'all' );
-    wp_enqueue_script( 'contactlense-js', CLF_PLUGIN_URL . 'js/contactlense.js', ['jquery'], time(), 1 );
   }
 
   // Shortcode function
