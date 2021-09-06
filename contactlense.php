@@ -146,11 +146,12 @@ class ContactLenseForm
     					<h3><?php echo esc_html__( 'Get In Touch.', 'contactlense' ); ?></h3>
     					<div class="form__wrapper">
     						<form id="cf_form">
-    							<input id="cf_fullname" type="text" name="fullname" placeholder="Fullname">
+    							<input id="cf_fullname" type="text" name="fullname" placeholder="Fullname" required>
     							<input id="cf_email" type="email" name="email" placeholder="Email">
-                  <input id="cf_telno" type="tel" name="phone" placeholder="Phone Number">
-    							<textarea id="cf_message" rows="5" cols="33" name="message" placeholder="Message">Message</textarea>
+                  <input id="cf_telno" type="tel" name="phone" placeholder="Phone Number" required>
+    							<textarea id="cf_message" rows="5" cols="33" name="message" placeholder="Message" required></textarea>
     							<button type="submit" id="cf_submit">Send Message</button>
+                  <h6 id="msg_notify"></h6>
     						</form>
     					</div>
     				</div>
@@ -168,6 +169,7 @@ class ContactLenseForm
   {?>
     <script>
 
+    const msgNotify = document.querySelector('#msg_notify');
     let nonce = '<?php echo wp_create_nonce('wp_rest'); ?>';
 
       ( function($){
@@ -175,6 +177,22 @@ class ContactLenseForm
           e.preventDefault();
           var form = $( this ).serialize();
           console.log( form );
+
+          // Check Validation
+          if ( $('#cf_fullname').val() === "" || $('#cf_telno').val() === "" || $('#cf_message').val() === "" ) {
+            msgNotify.style.color = 'red';
+            msgNotify.textContent = 'Message not sent, fill all gaps';
+            return;
+          } else {
+            setTimeout( () =>{
+              $(this).closest('form').find("input[type=text], input[type=email], input[type=tel], textarea").val("");
+              msgNotify.style.color = 'green';
+              msgNotify.textContent = 'Message sent!';
+            }, 1000 )
+            setTimeout( () => {
+              msgNotify.textContent = '';
+            }, 3000 )
+          }
 
           $.ajax({
             method:'post',
