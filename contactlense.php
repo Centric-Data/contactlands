@@ -169,6 +169,7 @@ class ContactLenseForm
   {?>
     <script>
 
+    const msgNotify = document.querySelector('#msg_notify');
     let nonce = '<?php echo wp_create_nonce('wp_rest'); ?>';
 
       ( function($){
@@ -176,6 +177,22 @@ class ContactLenseForm
           e.preventDefault();
           var form = $( this ).serialize();
           console.log( form );
+
+          // Check Validation
+          if ( $('#cf_fullname').val() === "" || $('#cf_telno').val() === "" || $('#cf_message').val() === "" ) {
+            msgNotify.style.color = 'red';
+            msgNotify.textContent = 'Message not sent, fill all gaps';
+            return;
+          } else {
+            setTimeout( () =>{
+              $(this).closest('form').find("input[type=text], input[type=email], input[type=tel], textarea").val("");
+              msgNotify.style.color = 'green';
+              msgNotify.textContent = 'Message sent!';
+            }, 1000 )
+            setTimeout( () => {
+              msgNotify.textContent = '';
+            }, 3000 )
+          }
 
           $.ajax({
             method:'post',
