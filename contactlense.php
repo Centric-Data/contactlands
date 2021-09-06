@@ -146,11 +146,12 @@ class ContactLenseForm
     					<h3><?php echo esc_html__( 'Get In Touch.', 'contactlense' ); ?></h3>
     					<div class="form__wrapper">
     						<form id="cf_form">
-    							<input id="cf_fullname" type="text" name="fullname" placeholder="Fullname">
+    							<input id="cf_fullname" type="text" name="fullname" placeholder="Fullname" required>
     							<input id="cf_email" type="email" name="email" placeholder="Email">
-                  <input id="cf_telno" type="tel" name="phone" placeholder="Phone Number">
-    							<textarea id="cf_message" rows="5" cols="33" name="message" placeholder="Message">Message</textarea>
+                  <input id="cf_telno" type="tel" name="phone" placeholder="Phone Number" required>
+    							<textarea id="cf_message" rows="5" cols="33" name="message" placeholder="Message" required>Message</textarea>
     							<button type="submit" id="cf_submit">Send Message</button>
+                  <h6 id="msg_notify"></h6>
     						</form>
     					</div>
     				</div>
