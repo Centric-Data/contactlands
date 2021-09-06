@@ -149,7 +149,7 @@ class ContactLenseForm
     							<input id="cf_fullname" type="text" name="fullname" placeholder="Fullname" required>
     							<input id="cf_email" type="email" name="email" placeholder="Email">
                   <input id="cf_telno" type="tel" name="phone" placeholder="Phone Number" required>
-    							<textarea id="cf_message" rows="5" cols="33" name="message" placeholder="Message" required>Message</textarea>
+    							<textarea id="cf_message" rows="5" cols="33" name="message" placeholder="Message" required></textarea>
     							<button type="submit" id="cf_submit">Send Message</button>
                   <h6 id="msg_notify"></h6>
     						</form>
