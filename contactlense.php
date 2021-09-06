@@ -156,9 +156,6 @@ class ContactLenseForm
     					</div>
     				</div>
     			</div>
-    			<div class="contact__layout--bottom">
-
-          </div>
     		</div>
     	</div>
     </section>
