@@ -177,14 +177,21 @@ class ContactLenseForm
 
           // Check Validation
           if ( $('#cf_fullname').val() === "" || $('#cf_telno').val() === "" || $('#cf_message').val() === "" ) {
-            msgNotify.style.color = 'red';
-            msgNotify.textContent = 'Message not sent, fill all gaps';
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Form not submitted, try again!'
+            })
             return;
           } else {
             setTimeout( () =>{
               $(this).closest('form').find("input[type=text], input[type=email], input[type=tel], textarea").val("");
-              msgNotify.style.color = 'green';
-              msgNotify.textContent = 'Message sent!';
+              Swal.fire({
+                icon: 'success',
+                title: 'Message Sent',
+                showConfirmButton: false,
+                timer: 1500
+              })
             }, 1000 )
             setTimeout( () => {
               msgNotify.textContent = '';
