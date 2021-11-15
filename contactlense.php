@@ -146,7 +146,7 @@ class ContactLenseForm
     							</div>
     							<div class="card--details">
     								<p>8am – 4pm</p>
-                    <p>Closed on Weekends and Public Holidays</p>
+                    <p>Closed on Weekends and Public Holidays.</p>
     							</div>
     						</div>
     					</div>
