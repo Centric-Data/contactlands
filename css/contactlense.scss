@@ -48,6 +48,10 @@
             display: flex;
             justify-content: space-around;
         }
+        &--bottom{
+            margin-top: 1em;
+            padding: .5em;
+        }
     }
 }
 .top{
