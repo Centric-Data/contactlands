@@ -145,8 +145,7 @@ class ContactLenseForm
     								<span class="material-icons">hourglass_bottom</span>
     							</div>
     							<div class="card--details">
-    								<p>8am – 4pm</p>
-                    <p>Closed on Weekends and Public Holidays.</p>
+    								<p>8am – 4pm <br>Closed on Weekends and Public Holidays.</p>
     							</div>
     						</div>
     					</div>
@@ -166,7 +165,7 @@ class ContactLenseForm
     				</div>
     			</div>
           <div class="contact__layout--bottom">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3799.115746584082!2d31.074781115244352!3d-17.7862564878407!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1931b01ba5876863%3A0x9e23674c33fc68a!2sCelestial%20Park!5e0!3m2!1sen!2szw!4v1636963943090!5m2!1sen!2szw" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3799.115746584082!2d31.074781115244352!3d-17.7862564878407!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1931b01ba5876863%3A0x9e23674c33fc68a!2sCelestial%20Park!5e0!3m2!1sen!2szw!4v1636963943090!5m2!1sen!2szw" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
           </div>
     		</div>
     	</div>
